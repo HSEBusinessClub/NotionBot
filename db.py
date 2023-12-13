@@ -1,26 +1,36 @@
 import os
 import psycopg2
+from psycopg2.extensions import cursor, connection
 
 
 CREATE_USER_TABLE_QUERY = """
-CREATE TABLE IF NOT EXIST users(
-id INT PRIMARY KEY,
-email VARCHAR
+CREATE TABLE IF NOT EXISTS users(
+id SERIAL PRIMARY KEY,
+email VARCHAR,
+chat_id INT
 )"""
 
 CREATE_TASKS_TABLE_QUERY = """
-CREATE TABLE IN NOT EXISTS tasks(
-id INT PRIMARY KEY,
-owner_id = INT
+CREATE TABLE IF NOT EXISTS tasks(
+id SERIAL PRIMARY KEY,
+owner_id INT
 )
 """
 
 
-def init_db() -> tuple[psycopg2.connect, psycopg2.cursor]:
+def ADD_USER(email: str, chat_id: int) -> str:
+    return f"""
+    INSERT INTO users (email, chat_id)
+    VALUES ('{email}', {chat_id});
+"""
+
+
+def init_db() -> tuple[connection, cursor]:
     user_name = os.environ["POSTGRES_USER"]
     db_password = os.environ["POSTGRES_PASSWORD"]
     db_name = os.environ["POSTGRES_DB_NAME"]
-    connection = psycopg2.connect(host='localhost', user=user_name,
+
+    connection = psycopg2.connect(host='postgres', user=user_name,
                                   password=db_password, database=db_name)
     cursor = connection.cursor()
 

@@ -2,12 +2,13 @@ version: "3"
 
 services:
 
-  postgress:
+  postgres:
     image: postgres:12
+    hostname: postgres
     ports:
       - "5432:5432"
     volumes: 
-      - ./postgresdata:/var/lib/postgresql/data
+      - ./db/data:/var/lib/postgresql/data
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -30,6 +31,17 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - awesome
+
+  bot:
+    build: .
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - "80:80"
     networks:
       - awesome
 
